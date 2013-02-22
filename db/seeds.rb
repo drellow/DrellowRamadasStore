@@ -6,6 +6,13 @@
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
 
-10.times do |n|
-  Item.create(:name => "Imp #{n + 1}", :price => (40 + n))
+names = %w(Ferdinand Ezekial Barney Sycorax Blimpy Lars Bubbles Trickster Creature Dyane Shadow Margaret Billy Rokzor Sprinkles Tug Wubbles Chester Miles Mittens)
+r = Random.new
+
+20.times do |n|
+  puts "#{Dir.pwd}"
+  file = File.open("#{Dir.pwd}/app/assets/images/#{n + 1}.jpeg")
+  Item.create(:name => names[n],
+              :price => r.rand(20...62),
+              :image => file.read())
 end

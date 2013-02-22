@@ -29,7 +29,7 @@ this.ItemAction = (element) ->
     $.ajax({
       url: '/cart',
       type: 'PUT',
-      data: "id=" + that.element.data('id'),
+      data: "id=" + that.element.data('id') + "&ac=add",
       success: () ->
         Cart.update()
     })
@@ -38,26 +38,59 @@ this.ItemAction = (element) ->
 this.Carrousel = (element, cart) ->
   that = this
   this.element = $(element)
+  this.interval = null
+  this.direction = '-=300'
 
   this.getItems = () ->
-    that.element.width($(document).width() - 280)
+    that.element.width($(window).width() - 280)
 
     $(window).resize(() ->
-      that.element.width($(document).width() - 280)
+      that.element.width($(window).width() - 280)
     )
     Item.grabAll(that.populate)
+
+
+  this.start = () ->
+    that.interval = setInterval(() ->
+      distance = Math.abs(parseInt(that.element.find("ol").css('left')))
+      olSize = that.element.find("ol").width()
+      carrouselSize = that.element.width()
+
+      if (distance >= olSize - carrouselSize) && (that.direction == '-=300')
+        that.direction = '+=300'
+
+      if (distance <= 0) && (that.direction == '+=300')
+        that.direction = '-=300'
+
+      that.element.find("ol").animate({
+        left: that.direction
+        }, 300, 'swing')
+    , 1000)
 
   this.populate = () ->
     ol = $("<ol></ol>")
 
     $(Item.all).each(() ->
-      li = $("<li>" + this.name + "</li>").data('id', this.id)
+      li = $("<li></li>").data('id', this.id)
 
-      li.width($(document).width() - 280)
+      image = $("<img src='/photos/" + this.id + "'>")
+      title = $("<div class='label title'>" + this.name + "</div>")
+      price = $("<div class='label'>$" + this.price + "</div>")
 
-      $(window).resize(() ->
-        li.width($(document).width() - 280)
-      )
+      li.append(image)
+      li.append(title)
+      li.append(price)
+
+      rand = () ->
+        return Math.floor(Math.random() * 255)
+
+      li.css('background', 'rgb(' + rand() + ',' + rand() + ',' + rand() + ')')
+
+      # li.width($(window).width() - 280)
+
+      # $(window).resize(() ->
+      #   li.width($(window).width() - 280)
+      # )
 
       new ItemAction(li)
 
@@ -65,12 +98,20 @@ this.Carrousel = (element, cart) ->
       return
     )
 
-    ol.width(($(document).width() - 280) * Item.all.length)
+    ol.width(300 * Item.all.length)
 
-    $(window).resize(() ->
-      ol.width(($(document).width() - 280) * Item.all.length)
-    )
+    # $(window).resize(() ->
+    #   ol.width(($(window).width() - 280) * Item.all.length)
+    # )
 
     that.element.append(ol)
+
+    that.start()
+    that.element.mouseover(() ->
+      clearInterval(that.interval)
+    )
+    that.element.mouseleave(() ->
+      that.start()
+    )
 
   return

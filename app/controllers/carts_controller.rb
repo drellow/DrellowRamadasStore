@@ -18,10 +18,11 @@ class CartsController < ApplicationController
   end
 
   def update
-    puts "--------------"
-    puts params
-    puts "--------------"
-    @cart.items << Item.find(params[:id])
+    @cart.items << Item.find(params[:id]) if params[:ac] == "add"
+    if params[:ac] == "destroy"
+      destroyMe = @cart.selections.where(item_id: params[:id]).first
+      @cart.selections.delete(destroyMe)
+    end
     render nothing: true
   end
 end
