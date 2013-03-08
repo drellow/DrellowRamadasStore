@@ -1,6 +1,7 @@
 DrellowRamadasStore
 ===================
 
-* Javascript & jQuery slider.
-* Involves the selling of imps
-* Utilizes AJAX to instantly update shopping cart
+
+* Utilizes jQuery and Javascript to make interactive carrousel
+* Basic shopping cart functionality utilizes cookies and AJAX
+* Written in CoffeeScript
